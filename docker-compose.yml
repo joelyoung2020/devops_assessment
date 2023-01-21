@@ -1,0 +1,28 @@
+version: "3.7"
+services:
+  app:
+    image: mcr.microsoft.com/dotnet/samples:dotnetapp
+    ports:
+      - "5000:80"
+    environment:
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Host=db;port=5432;Database=mydb;Username=joel;Password=password
+    depends_on:
+      - db
+    networks:
+      - app_network
+
+  db:
+    image: postgres:12.5
+    environment:
+      - POSTGRES_USER=joel
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=mydb
+    ports:
+      - "5432:5432"
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
