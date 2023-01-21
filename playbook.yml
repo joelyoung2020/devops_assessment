@@ -1,0 +1,29 @@
+
+---
+- name: Playbook to docker stack on remote server using docker-compose
+  hosts: all
+  become: yes
+  tasks:
+    - name: Making a directory to store docker-compose file
+      file:
+        path: ~/dockercompose
+        state: directory
+
+    - name: copying docker-compose file to remote server 
+      copy: 
+        src: ~/docker-compose.yml
+        dest: ~/dockercompose/
+
+    - name: Go to the directory
+      command: chdir=/dockercompose
+    
+    - name: running docker-compose on remote server
+      command: docker-compose up -d
+      register: result
+
+    - mail: 
+        to: joelokebugwu1998@gmail.com
+        subject: Ansible alert
+        body: There was an error will deploying docker-compose stack on multiple nodes
+        when: result.rc != 0
+
